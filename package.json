@@ -9,12 +9,18 @@
     "dev": "nodemon ./src/server.ts",
     "start": "npm run build && node dist/server.js",
     "debug": "nodemon --inspect=0.0.0.0:9229 ./src/server.ts",
+    "watch": "tsc -w",
     "lint": "eslint .",
     "format": "prettier . --write"
   },
-  "keywords": [],
+  "keywords": [
+    "tvshows"
+  ],
   "author": "Crystal R. Williams",
   "license": "ISC",
+  "scarfSettings": {
+    "enabled": false
+  },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.474.0",
     "@prisma/client": "^5.9.1",
@@ -26,8 +32,10 @@
     "dotenv": "^6.2.0",
     "express": "^4.19.2",
     "express-validator": "^6.15.0",
+    "ioredis": "^5.4.2",
     "jsonwebtoken": "^9.0.2",
-    "multer": "^1.4.5-lts.1"
+    "multer": "^1.4.5-lts.1",
+    "swagger-ui-dist": "^5.18.2"
   },
   "devDependencies": {
     "@babel/core": "^7.23.6",
