@@ -2,7 +2,7 @@ name: db-changes
 on:
   push:
     branches:
-      - master
+      - main
 jobs:
   migrate-db:
     runs-on: ubuntu-latest

@@ -3,7 +3,7 @@ run-name: ${{ github.actor }}
 on:
   pull_request:
     branches:
-      - master
+      - main
       - 'releases/**'
 jobs:
   run-tests:
