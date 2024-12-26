@@ -41,9 +41,12 @@ export interface TvShow {
 
 export interface PopularTvShow {
   id: number;
-  original_name: string;
+  name: string;
   overview: string;
-  poster_path: string;
+  image_path: string;
+  vote_average: number;
+  first_air_date: string;
+  // cacheExpiration: string; // TODO: determine correct type
 }
 
 export interface FullTvShowInfo extends TvShow {
@@ -83,16 +86,26 @@ export interface Episode {
 }
 
 export interface PopularShows {
-  results: Shows[];
+  results: Show[];
 }
 
-type backdrop_path = string;
+// type backdrop_path = string;
 
-export interface Shows {
+export interface Show {
   overview: string;
   id: number;
   name: string;
-  image_path: backdrop_path;
+  // image_path: backdrop_path;
+  poster_path: string;
+  vote_average: number;
+  first_air_date: string; // TODO: another type?
+}
+
+export interface TransformedShow {
+  overview: string;
+  id: number;
+  name: string;
+  image_path: string;
   vote_average: number;
   first_air_date: string; // TODO: another type?
 }

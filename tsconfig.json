@@ -24,7 +24,8 @@
 	},
 	"include": [
 		"src/**/*",
-		"src/test/*"
+		"src/tests/*",
+		"**/*.spec.ts"
 	],
 	"strict": true
 }

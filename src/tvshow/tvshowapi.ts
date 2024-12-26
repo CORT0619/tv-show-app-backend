@@ -3,9 +3,10 @@ import * as showApi from './tvmazeapi';
 import {
   Episode,
   PopularShows,
-  Shows,
+  Show,
   TvShow,
-  TvShowResults
+  TvShowResults,
+  TransformedShow
 } from '../models/tvshow';
 import 'dotenv/config';
 import { AxiosError } from 'axios';
@@ -16,8 +17,8 @@ import { AxiosError } from 'axios';
  * @returns an array of matching shows
  */
 export async function searchTvShows(show: string): Promise<TvShow[]> {
+  const url = showApi.showSearch(show);
   try {
-    const url = showApi.showSearch(show);
     const results = await axios.get<TvShowResults[]>(url);
 
     if (results.status >= 400) {
@@ -74,8 +75,8 @@ export async function searchTvShows(show: string): Promise<TvShow[]> {
  * @returns an array of episodes for a given tv show
  */
 export async function retrieveShowEpisodes(id: string): Promise<Episode[]> {
+  const url = showApi.retrieveShowEpisodes(id);
   try {
-    const url = showApi.retrieveShowEpisodes(id);
     const response = (await axios.get<Episode[]>(url)).data;
 
     return response.map(
@@ -126,7 +127,7 @@ export async function retrieveShowInformation(showId: string): Promise<TvShow> {
   }
 }
 
-export async function getPopularShows(): Promise<Shows[]> {
+export async function getPopularShows(): Promise<TransformedShow[]> {
   try {
     if (!process.env.themoviedbApiKey)
       throw new Error('The Movie DB API key cannot be found.');
@@ -139,17 +140,20 @@ export async function getPopularShows(): Promise<Shows[]> {
         id,
         overview,
         name,
-        image_path: backdrop_path,
+        poster_path,
         vote_average,
         first_air_date
-      }: Shows) => ({
-        id,
-        name,
-        overview,
-        image_path: `https://image.tmdb.org/t/p/w500/${backdrop_path}`,
-        vote_average,
-        first_air_date
-      })
+      }: Show) => {
+        const poster = `https://image.tmdb.org/t/p/w500${poster_path}`;
+        return {
+          id,
+          name,
+          overview,
+          image_path: poster,
+          vote_average,
+          first_air_date
+        };
+      }
     );
   } catch (err) {
     let message = 'An error has occurred.';
