@@ -3,6 +3,9 @@ import { param, query, validationResult } from 'express-validator';
 import { escape } from 'node:querystring';
 import * as showApi from '../tvshow/tvshowapi';
 import { paginateRecords } from '../utils';
+import { TransformedShow } from '../models/tvshow';
+import * as redis from '../redis';
+
 const showRouter = express.Router();
 
 /* Search for tv shows */
@@ -46,13 +49,21 @@ showRouter.get('/', query('name').notEmpty(), (async (req, res, next) => {
 
 /* Get Popular Shows */
 showRouter.get('/popular', (async (req, res, next) => {
+  let response: TransformedShow[];
   const { size, page } = req.query as { size: string; page: string };
 
   const recordSize = (size ? parseInt(size) : undefined) ?? 10;
   const requestedPage = parseInt(page);
 
   try {
-    const response = await showApi.getPopularShows();
+    const shows = await redis.getPopularShows();
+    if (shows) {
+      response = shows;
+    } else {
+      response = await showApi.getPopularShows();
+      await redis.setPopularShows(response);
+    }
+
     const paginatedResponse = paginateRecords(
       response,
       recordSize,
@@ -83,7 +94,6 @@ showRouter.get('/:showId', param('showId').notEmpty().escape().isInt(), (async (
 
   try {
     const response = await showApi.retrieveShowInformation(showId);
-
     res.status(200).json(response);
   } catch (err) {
     next(err);
