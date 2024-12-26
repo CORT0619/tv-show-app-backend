@@ -23,12 +23,12 @@ export const photoFilter = (
   callback(null, true);
 };
 
-export const signToken = (
+export function signToken(
   type: 'access' | 'refresh',
   userId: string,
   expiry: string,
   role?: string
-): string => {
+): string {
   // TODO: make sure env variables are set before using
   const payload: tokenPayload = {
     userId,
@@ -48,9 +48,11 @@ export const signToken = (
   if (!token) throw new Error('An error occurred signing the token');
   console.log('token ', token);
   return token;
-};
+}
 
-export const hashPassword = async (password: string) => {
+export async function hashPassword(
+  password: string
+): Promise<{ salt: string; hashed: string }> {
   try {
     const salt = await bcrypt.genSalt(+process.env.salts);
     const hashed = await bcrypt.hash(password, salt);
@@ -59,28 +61,29 @@ export const hashPassword = async (password: string) => {
     let message = 'an error occurred hashing the password';
 
     if (err instanceof Error) {
+      // TODO: what am I trying to make happen here?
       message = err.message;
     }
     throw new Error(message);
   }
-};
+}
 
-export const generateId = () => {
+export function generateId() {
   return uuidv4();
-};
+}
 
-export const verifyPassword = async (
+export async function verifyPassword(
   dbPassword: string,
   loginPassword: string
-): Promise<boolean> => {
+): Promise<boolean> {
   return await bcrypt.compare(loginPassword, dbPassword);
-};
+}
 
-export const verifyToken = (
+export function verifyToken(
   // TODO: add error handling for this
   token: string,
   type: 'access' | 'refresh'
-): string | JwtPayload => {
+): string | JwtPayload {
   let secret: string;
   if (type === 'access') {
     secret = process.env.ACCESS_TOKEN_SECRET;
@@ -94,13 +97,9 @@ export const verifyToken = (
   return jwt.verify(token, secret, {
     algorithms: ['RS256']
   });
-};
+}
 
-export const validateToken = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export function validateToken(req: Request, res: Response, next: NextFunction) {
   const header = req.headers['Authorization'];
 
   if (typeof header === 'undefined' || header === '')
@@ -113,7 +112,7 @@ export const validateToken = (
   // TODO: get claims from token if needed
   // TODO: add more validation to check claims are there
   next();
-};
+}
 
 // send jwt to client
 
